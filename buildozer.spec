@@ -8,14 +8,10 @@ version = 0.1
 
 requirements = python3,kivy,kivymd,requests
 
-# (optional) if you use icons:
-# icon.filename = assets/icon.png
-
 [buildozer]
 log_level = 2
 
 [android]
-# common stable defaults:
 android.permissions = INTERNET
-android.api = 33
+android.api = 34
 android.minapi = 21
