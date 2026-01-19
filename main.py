@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from kivy.lang import Builder
 from kivy.clock import Clock
 from kivymd.app import MDApp
