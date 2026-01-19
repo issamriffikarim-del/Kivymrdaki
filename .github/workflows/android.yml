@@ -3,20 +3,40 @@ name: Build Android APK
 on:
   workflow_dispatch:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
 
 jobs:
   build:
     runs-on: ubuntu-22.04
+
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+
+      # (optional but helps) ensure android sdk has build-tools/platforms and accept licenses
+      - name: Install Android SDK packages + accept licenses
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y wget unzip
+
+          export ANDROID_SDK_ROOT="$HOME/android-sdk"
+          mkdir -p "$ANDROID_SDK_ROOT/cmdline-tools"
+          cd /tmp
+          wget -q https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip -O cmdline-tools.zip
+          unzip -q cmdline-tools.zip
+          mv cmdline-tools "$ANDROID_SDK_ROOT/cmdline-tools/latest"
+
+          export PATH="$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$ANDROID_SDK_ROOT/platform-tools:$PATH"
+
+          yes | sdkmanager --licenses
+          sdkmanager "platform-tools" "platforms;android-34" "build-tools;34.0.0"
 
       - name: Build with Buildozer
         uses: digreatbrian/buildozer-action@v2
         with:
-          work_dir: .
-          buildozer_cmd: buildozer -v android debug
+          python-version: "3.11"
+          work-dir: .
+          buildozer-cmd: |
+            yes | buildozer -v android debug
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
